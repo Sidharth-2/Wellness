@@ -55,10 +55,7 @@ public class JwtFilter extends OncePerRequestFilter {
             }
 
         } catch (JwtException e) {
-        	
-        	
-        	//ApiError apiError = new ApiError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token", "Invalid JWT token", "", )
-               	
+        	                       	
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
        
             return;
