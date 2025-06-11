@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sid.wellness.dto.ApiError;
 import com.sid.wellness.service.HealthTipService;
 
@@ -35,6 +37,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             chain.doFilter(request, response);
+            sendError(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token", "");
             return;
         }
 
@@ -55,13 +58,20 @@ public class JwtFilter extends OncePerRequestFilter {
             }
 
         } catch (JwtException e) {
-        	                       	
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
+        	                       	            
+            sendError(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token", "");
        
             return;
         }
 
         chain.doFilter(request, response);
+    }
+    
+    private void sendError(HttpServletResponse response, int status, String message, String path) throws IOException {
+        ApiError apiError = new ApiError(status, HttpStatus.valueOf(status).getReasonPhrase(), message, path);
+        response.setContentType("application/json");
+        response.setStatus(status);
+        new ObjectMapper().writeValue(response.getOutputStream(), apiError);
     }
     
     public String extractUsername(String token) {

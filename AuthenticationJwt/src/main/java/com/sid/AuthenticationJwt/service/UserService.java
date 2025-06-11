@@ -66,7 +66,7 @@ public class UserService {
     	 return Jwts.builder()
                  .setSubject(email)
                  .setIssuedAt(new Date())
-                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 2))
                  .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()), SignatureAlgorithm.HS256)
                  .compact();
     	
