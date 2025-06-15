@@ -43,7 +43,7 @@ public class HealthTipController {
         }).collect(Collectors.toList());
         
 		return new ResponseEntity<>(
-			    new ApiResponse<>(true, "Tip list fetched successfully", tipsList),
+			    new ApiResponse<>(true, "Tip list fetched successfully",200 , tipsList),
 			    HttpStatus.OK
 			);
     }
@@ -64,7 +64,7 @@ public class HealthTipController {
         });
     	
 		return new ResponseEntity<>(
-			    new ApiResponse<>(true, "Health Tip fetched successfully", result),
+			    new ApiResponse<>(true, "Health Tip fetched successfully", 200, result),
 			    HttpStatus.OK
 			);
     }

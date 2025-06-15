@@ -15,11 +15,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sid.wellness.dto.ApiError;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 @Component
 public class JWTAuthenticationEntryPoint implements AuthenticationEntryPoint {
-    private Logger logger = LoggerFactory.getLogger(JWTAuthenticationEntryPoint.class);
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
@@ -31,7 +29,7 @@ public class JWTAuthenticationEntryPoint implements AuthenticationEntryPoint {
     }
     
     private void sendError(HttpServletResponse response, int status, String message, String path) throws IOException {
-        ApiError apiError = new ApiError(status, HttpStatus.valueOf(status).getReasonPhrase(), message, path);
+        ApiError apiError = new ApiError(false, status, HttpStatus.valueOf(status).getReasonPhrase(), message, path);
         response.setContentType("application/json");
         response.setStatus(status);
         new ObjectMapper().writeValue(response.getOutputStream(), apiError);

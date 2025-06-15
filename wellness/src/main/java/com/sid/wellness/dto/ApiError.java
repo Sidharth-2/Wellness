@@ -17,15 +17,15 @@ import lombok.Setter;
 @Data
 public class ApiError {
 
-	 private int status;
+    	private boolean success;
+    	private int status;
 	    private String error;
 	    private String message;
 	    private String path;
-	    //private Instant timestamp = Instant.now();
 	    private String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
 	    
 	    
-	    public ApiError(int status, String error, String message, String path) {
+	    public ApiError(boolean success, int status, String error, String message, String path) {
 	        this.status = status;
 	        this.error = error;
 	        this.message = message;
