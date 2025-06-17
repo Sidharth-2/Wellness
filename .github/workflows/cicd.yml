@@ -46,25 +46,21 @@ jobs:
         run: mvn test
 
       - name: Build Docker image
-        run: docker build \
-          --file Dockerfile \
-          --tag my-org/my-app:${{ github.sha }} \
-          .
+        working-directory: AuthenticationJwt
+        run: docker build -f Dockerfile -t sidharth2314/my-org:wellness-auth-1.0 .
 
       - name: Tag latest
-        run: docker tag \
-          my-org/my-app:${{ github.sha }} \
-          my-org/my-app:latest
+        run: docker tag sidharth2314/my-org:wellness-auth-1.0 sidharth2314/my-org:latest
 
-    #   - name: Log in to Docker Hub
-    #     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
-    #     uses: docker/login-action@v3
-    #     with:
-    #       username: ${{ secrets.DOCKERHUB_USERNAME }}
-    #       password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Log in to Docker Hub
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/docker-1'
+        uses: docker/login-action@v3
+        with:
+          username: sidharth2314
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Push Docker image
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/docker-1'
         run: |
-          docker push my-org/my-app:${{ github.sha }}
-          docker push my-org/my-app:latest
+          docker push sidharth2314/my-org:wellness-auth-1.0
+          docker push sidharth2314/my-org:latest
