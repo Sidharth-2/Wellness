@@ -34,9 +34,11 @@ jobs:
           cache: 'maven'
 
       - name: Build JAR
+        working-directory: AuthenticationJwt
         run: mvn clean package -DskipTests
 
       - name: Run Tests
+        working-directory: AuthenticationJwt
         env:
           SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/wellness?allowPublicKeyRetrieval=true&useSSL=false
           SPRING_DATASOURCE_USERNAME: root
