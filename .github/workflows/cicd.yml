@@ -1,0 +1,68 @@
+name: CI – Build, Test & Dockerize
+
+on:
+  push:
+    branches: ["main", "docker-1"]
+  pull_request:
+    branches: ["main", "docker-1"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      mysqldb:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: "$$idMySQL231"
+          MYSQL_DATABASE: wellness
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: 'maven'
+
+      - name: Build JAR
+        run: mvn clean package -DskipTests
+
+      - name: Run Tests
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/wellness?allowPublicKeyRetrieval=true&useSSL=false
+          SPRING_DATASOURCE_USERNAME: root
+          SPRING_DATASOURCE_PASSWORD: "$$idMySQL231"
+        run: mvn test
+
+      - name: Build Docker image
+        run: docker build \
+          --file Dockerfile \
+          --tag my-org/my-app:${{ github.sha }} \
+          .
+
+      - name: Tag latest
+        run: docker tag \
+          my-org/my-app:${{ github.sha }} \
+          my-org/my-app:latest
+
+    #   - name: Log in to Docker Hub
+    #     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    #     uses: docker/login-action@v3
+    #     with:
+    #       username: ${{ secrets.DOCKERHUB_USERNAME }}
+    #       password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Push Docker image
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+        run: |
+          docker push my-org/my-app:${{ github.sha }}
+          docker push my-org/my-app:latest
