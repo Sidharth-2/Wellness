@@ -1,7 +1,8 @@
 package com.sid.wellness.dto;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,10 +17,19 @@ import lombok.Setter;
 @Data
 public class ApiError {
 
-	private int status;
-    private String error;
-    private String message;
-    private String path;
-    private LocalDate date = LocalDate.now();
+    	private boolean success;
+    	private int status;
+	    private String error;
+	    private String message;
+	    private String path;
+	    private String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+	    
+	    
+	    public ApiError(boolean success, int status, String error, String message, String path) {
+	        this.status = status;
+	        this.error = error;
+	        this.message = message;
+	        this.path = path;
+	    }
     
 }

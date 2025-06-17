@@ -26,6 +26,6 @@ public class Checkin {
     private String mood;
     private String notes;
     private int progress;
-
+    private String userId;
     private LocalDate date = LocalDate.now();
 }

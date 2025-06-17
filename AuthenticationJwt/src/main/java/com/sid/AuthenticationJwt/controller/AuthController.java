@@ -1,6 +1,7 @@
 package com.sid.AuthenticationJwt.controller;
 
 import java.util.Optional;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sid.AuthenticationJwt.auth.JwtUtil;
 import com.sid.AuthenticationJwt.dto.request.AuthRequest;
 import com.sid.AuthenticationJwt.dto.request.LoginRequest;
 import com.sid.AuthenticationJwt.dto.response.AuthResponse;
@@ -31,6 +33,8 @@ public class AuthController {
     private UserRepository userRepository;
     
     @Autowired private PasswordEncoder passwordEncoder;
+    
+    @Autowired private JwtUtil jwtUtil;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
@@ -47,9 +51,9 @@ public class AuthController {
 	        	
                 return userService.getError("Invalid credentials");
             }                       
-            
+                       
             return ResponseEntity.status(HttpStatus.OK).body(
-                new AuthResponse<>(true, "Login successful", userResponse, userService.getToken(loginRequest.getEmail()))
+                new AuthResponse<>(true, "Login successful", userResponse, jwtUtil.getToken(user.getId()))
             );
 
         } else {
@@ -68,17 +72,18 @@ public class AuthController {
                 new AuthResponse<>(false, "Email already exists", null, null)
             );
         }
-    	
+    	    	    	
         User user =  userService.registerUser(signupRequest.getUsername(), signupRequest.getPassword(), signupRequest.getEmail());
         
-        UserResponse userResponse = new UserResponse(user.getId(), user.getUsername(), user.getEmail());
-               
-        String token = userService.getToken(user.getEmail());
+        UserResponse userResponse = new UserResponse(user.getId(), user.getUsername(), user.getEmail());              
+        
+        String token = jwtUtil.getToken(userService.getId(user.getEmail()).getId());
         
         return ResponseEntity.status(HttpStatus.CREATED).body(
             new AuthResponse<>(true, "Signup successful", userResponse, token)
         );
     	    
     }
+   
 }
 

@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sid.wellness.dto.ReportDto;
+import com.sid.wellness.dto.response.ApiResponse;
 import com.sid.wellness.entity.Checkin;
 import com.sid.wellness.repository.CheckinRepository;
 
@@ -26,23 +30,45 @@ public class CheckinController {
     private CheckinRepository checkinRepository;
 
     @PostMapping
-    public Checkin postCheckin(@RequestBody Checkin checkin) {
-        return checkinRepository.save(checkin);
+    public ResponseEntity<?> postCheckin(@RequestBody Checkin checkin, Authentication authentication) {
+        
+        String userId = (String) authentication.getPrincipal();
+    	
+    	checkin.setUserId(userId);
+    	
+		return new ResponseEntity<>(
+			    new ApiResponse<>(true, "Check-ins saved successfully", 201, checkinRepository.save(checkin)),
+			    HttpStatus.OK
+			);
+        
     }
     
     @GetMapping("/checkins")
-    public List<Checkin> getCheckins() {
+    public ResponseEntity<?> getCheckins(Authentication authentication) {
+       	
+        String userId = (String) authentication.getPrincipal();
     	
-    	return checkinRepository.findAll();
+        List<Checkin> userCheckins = checkinRepository.findByUserId(userId);
+    	
+		return new ResponseEntity<>(
+			    new ApiResponse<>(true, "Check-ins fetched successfully",200 , userCheckins),
+			    HttpStatus.OK
+			);
+    	
     }
     
     @GetMapping("/checkins/reports")
-    public List<ReportDto> getReports() {
+    public ResponseEntity<?> getReports(Authentication authentication) {
     	
-    	List<ReportDto> reportsDtos = checkinRepository.findAll().stream()
+        String userId = (String) authentication.getPrincipal();
+    	
+    	List<ReportDto> reportsDtos = checkinRepository.findByUserId(userId).stream()
     		    .map(checkin -> new ReportDto(checkin.getId(), checkin.getProgress(), checkin.getDate()))
     		    .collect(Collectors.toList());
-
-    		return reportsDtos;
+    		
+    		return new ResponseEntity<>(
+    			    new ApiResponse<>(true, "Reports fetched successfully", 200, reportsDtos),
+    			    HttpStatus.OK
+    			);
     }
 }
