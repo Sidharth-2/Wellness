@@ -47,10 +47,10 @@ jobs:
 
       - name: Build Docker image
         working-directory: wellness
-        run: docker build -f Dockerfile -t sidharth2314/my-org:wellness-dashboard-1.0 .
+        run: docker build -f Dockerfile -t sidharth2314/wellness-dashboard:wellness-dashboard-1.0 .
 
       - name: Tag latest
-        run: docker tag sidharth2314/my-org:wellness-dashboard-1.0 sidharth2314/my-org:latest
+        run: docker tag sidharth2314/wellness-dashboard:wellness-dashboard-1.0 sidharth2314/wellness-dashboard:latest
 
       - name: Log in to Docker Hub
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/docker-1'
@@ -62,5 +62,5 @@ jobs:
       - name: Push Docker image
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/docker-1'
         run: |
-          docker push sidharth2314/my-org:wellness-dashboard-1.0
-          docker push sidharth2314/my-org:latest
+          docker push sidharth2314/wellness-dashboard:wellness-dashboard-1.0
+          docker push sidharth2314/wellness-dashboard:latest
