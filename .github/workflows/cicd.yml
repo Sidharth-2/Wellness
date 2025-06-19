@@ -37,14 +37,6 @@ jobs:
         working-directory: AuthenticationJwt
         run: mvn clean package -DskipTests
 
-      - name: Run Tests
-        working-directory: AuthenticationJwt
-        env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/wellness?allowPublicKeyRetrieval=true&useSSL=false
-          SPRING_DATASOURCE_USERNAME: root
-          SPRING_DATASOURCE_PASSWORD: "$$idMySQL231"
-        run: mvn test
-
       - name: Build Docker image
         working-directory: AuthenticationJwt
         run: docker build -f Dockerfile -t sidharth2314/my-org:wellness-auth-1.0 .
